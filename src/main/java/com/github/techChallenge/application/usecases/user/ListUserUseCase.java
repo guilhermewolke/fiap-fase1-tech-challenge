@@ -1,5 +1,6 @@
 package com.github.techChallenge.application.usecases.user;
 
+import com.github.techChallenge.application.gateways.IUserGateway;
 import com.github.techChallenge.application.gateways.UserGateway;
 import com.github.techChallenge.domain.user.IUserMapper;
 import com.github.techChallenge.domain.user.User;
@@ -11,7 +12,7 @@ import java.util.List;
 
 public class ListUserUseCase extends UserUseCase {
 
-    public ListUserUseCase(UserGateway gateway, IUserMapper mapper) {
+    public ListUserUseCase(IUserGateway gateway, IUserMapper mapper) {
         super(gateway, mapper);
     }
 

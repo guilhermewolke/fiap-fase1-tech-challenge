@@ -1,5 +1,6 @@
 package com.github.techChallenge.infrastructure.config;
 
+import com.github.techChallenge.application.gateways.IUserGateway;
 import com.github.techChallenge.application.gateways.UserGateway;
 import com.github.techChallenge.application.usecases.user.*;
 import com.github.techChallenge.application.validators.UserValidator;
@@ -14,33 +15,33 @@ import org.springframework.context.annotation.Configuration;
 public class UserConfig {
 
     @Bean
-    CreateUserUseCase createUserUseCase(UserGateway gateway, IUserMapper mapper, ISecurityConfig securityConfig) {
+    CreateUserUseCase createUserUseCase(IUserGateway gateway, IUserMapper mapper, ISecurityConfig securityConfig) {
         return new CreateUserUseCase(gateway, mapper, securityConfig);
     }
 
     @Bean
-    UpdateUserUseCase updateUserUseCase(UserGateway gateway, UserMapper mapper, UserValidator userValidator) {
+    UpdateUserUseCase updateUserUseCase(IUserGateway gateway, UserMapper mapper, UserValidator userValidator) {
         return new UpdateUserUseCase(gateway, mapper, userValidator);
     }
 
     @Bean
-    FindUserUseCase findUserUseCase(UserGateway gateway, UserMapper mapper) {
+    FindUserUseCase findUserUseCase(IUserGateway gateway, UserMapper mapper) {
         return new FindUserUseCase(gateway, mapper);
     }
 
     @Bean
-    ListUserUseCase listUserUseCase(UserGateway gateway, UserMapper mapper) {
+    ListUserUseCase listUserUseCase(IUserGateway gateway, UserMapper mapper) {
         return new ListUserUseCase(gateway, mapper);
     }
 
     @Bean
-    DeleteUserUseCase deleteUserUseCase(UserGateway gateway, UserMapper mapper) {
+    DeleteUserUseCase deleteUserUseCase(IUserGateway gateway, UserMapper mapper) {
         return new DeleteUserUseCase(gateway, mapper);
     }
 
     @Bean
-    UserValidator UserValidator(UserGateway gateway, IUserMapper mapper) {
-        return new UserValidator(gateway, mapper);
+    UserValidator UserValidator(IUserGateway gateway, IUserMapper mapper, ISecurityConfig securityConfig) {
+        return new UserValidator(gateway, mapper, securityConfig);
     }
 
     @Bean
@@ -54,6 +55,7 @@ public class UserConfig {
     }
 
     @Bean
-    ChangePasswordUseCase changePasswordUser(UserGateway gateway, IUserMapper mapper){return new ChangePasswordUseCase(gateway, mapper);};
+    ChangePasswordUseCase changePasswordUser(IUserGateway gateway, IUserMapper mapper, ISecurityConfig securityConfig){return new ChangePasswordUseCase(
+                gateway, mapper, securityConfig);};
 
 }

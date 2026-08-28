@@ -3,6 +3,7 @@ package com.github.techChallenge.application.usecases.user;
 import com.github.techChallenge.application.exceptions.DuplicateEmailException;
 import com.github.techChallenge.application.exceptions.DuplicateLoginException;
 import com.github.techChallenge.application.exceptions.UserNotFoundException;
+import com.github.techChallenge.application.gateways.IUserGateway;
 import com.github.techChallenge.application.gateways.UserGateway;
 import com.github.techChallenge.application.validators.UserValidator;
 import com.github.techChallenge.domain.user.IUserMapper;
@@ -17,7 +18,7 @@ import java.util.Optional;
 public class UpdateUserUseCase extends UserUseCase {
     private final UserValidator userValidator;
 
-    public UpdateUserUseCase(UserGateway gateway, IUserMapper mapper, UserValidator userValidator) {
+    public UpdateUserUseCase(IUserGateway gateway, IUserMapper mapper, UserValidator userValidator) {
         super(gateway, mapper);
         this.userValidator = userValidator;
     }

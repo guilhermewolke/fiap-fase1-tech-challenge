@@ -1,5 +1,6 @@
 package com.github.techChallenge.application.usecases.user;
 
+import com.github.techChallenge.application.gateways.IUserGateway;
 import com.github.techChallenge.application.gateways.UserGateway;
 import com.github.techChallenge.domain.user.IUserMapper;
 import com.github.techChallenge.domain.user.User;
@@ -8,7 +9,7 @@ import com.github.techChallenge.domain.user.dto.UserOutputDTO;
 
 public class DeleteUserUseCase extends UserUseCase {
 
-    public DeleteUserUseCase(UserGateway gateway, IUserMapper mapper) {
+    public DeleteUserUseCase(IUserGateway gateway, IUserMapper mapper) {
         super(gateway, mapper);
     }
 

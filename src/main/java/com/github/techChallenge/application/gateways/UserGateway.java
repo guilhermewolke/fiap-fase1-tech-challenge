@@ -3,19 +3,10 @@ package com.github.techChallenge.application.gateways;
 import com.github.techChallenge.application.exceptions.InvalidPasswordException;
 import com.github.techChallenge.domain.user.IUserMapper;
 import com.github.techChallenge.domain.user.User;
-import com.github.techChallenge.domain.user.dto.UserCreateInputDTO;
 import com.github.techChallenge.application.repositories.IUserRepository;
-import com.github.techChallenge.domain.user.dto.UserUpdateInputDTO;
 import com.github.techChallenge.infrastructure.security.ISecurityConfig;
-import com.github.techChallenge.infrastructure.security.SecurityConfig;
 import com.github.techChallenge.shared.UnauthorizedException;
-import com.github.techChallenge.shared.UserNotFoundException;
 import org.springframework.data.domain.Page;
-
-import com.github.techChallenge.shared.EmailAlreadyExistsException;
-import com.github.techChallenge.shared.LoginAlreadyExistsException;
-
-import java.util.Locale;
 
 public class UserGateway implements IUserGateway {
 
@@ -66,27 +57,14 @@ public class UserGateway implements IUserGateway {
     }
 
     @Override
-    public boolean validate(String rawPassword, String login){
+    public String getEncryptPasswordByLogin(String login){
 
-        if (!repository.existsByLogin(login)) {throw new UnauthorizedException() {
-        };}
+        return this.repository.getEncryptPasswordByLogin(login);
 
-        String encryptPasswordDataBase = this.repository.getEncryptPasswordByLogin(login);
-
-        if(encryptPasswordDataBase.isEmpty()){throw new InvalidPasswordException("Senha inválida e/ou vazia");};
-
-        if(securityConfig.passwordValidate(rawPassword, encryptPasswordDataBase)
-                && repository.existsByLogin(login)){
-            return true;
-        } else {
-            throw new UnauthorizedException();
-        }
     }
 
-    public boolean changePassword(String rawPassword, String login){
-        if (!repository.existsByLogin(login)) {throw new UnauthorizedException() {
-        };}
-        return repository.updatePasswordByLogin(securityConfig.passwordEncoder(rawPassword), login);
+    public boolean changePassword(String encodedPassword, String Login){
+        return repository.updatePasswordByLogin(encodedPassword, Login);
     }
 
     @Override

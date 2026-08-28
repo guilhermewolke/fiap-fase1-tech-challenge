@@ -12,7 +12,7 @@ public interface IUserGateway {
     Page<User> listByName(String name, int page, int offset);
     Page<User> list(Integer page, Integer offset);
     void delete(Long id);
-    boolean validate(String rawPassword, String login);
+    String getEncryptPasswordByLogin(String login);
     boolean emailExists(String email, Long id);
     boolean loginExists(String login);
     boolean loginExists(String login, Long id);

@@ -1,5 +1,6 @@
 package com.github.techChallenge.application.usecases.user;
 
+import com.github.techChallenge.application.gateways.IUserGateway;
 import com.github.techChallenge.domain.user.IUserMapper;
 import com.github.techChallenge.domain.user.User;
 import com.github.techChallenge.domain.user.dto.UserCreateInputDTO;
@@ -11,7 +12,7 @@ import com.github.techChallenge.shared.LoginAlreadyExistsException;
 
 public class CreateUserUseCase extends UserUseCase {
     private final ISecurityConfig security;
-    public CreateUserUseCase(UserGateway gateway, IUserMapper mapper, ISecurityConfig security) {
+    public CreateUserUseCase(IUserGateway gateway, IUserMapper mapper, ISecurityConfig security) {
         super(gateway, mapper);
         this.security = security;
     }
@@ -22,11 +23,11 @@ public class CreateUserUseCase extends UserUseCase {
                 dto.name(),
                 dto.email(),
                 dto.login(),
-                security.passwordEncoder(dto.password()),
+                security.passwordEncoder(dto.password(), dto.login()),
                 dto.level(),
                 dto.address());
 
-        if (gateway.emailExists(user.getEmail()))
+        if (gateway.emailExists(user.getEmail(), user.getId()))
             throw new EmailAlreadyExistsException();
 
         if (gateway.loginExists(user.getLogin()))
