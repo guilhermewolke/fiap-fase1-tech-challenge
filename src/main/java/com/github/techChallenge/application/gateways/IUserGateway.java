@@ -14,6 +14,7 @@ public interface IUserGateway {
     void delete(Long id);
     String getEncryptPasswordByLogin(String login);
     boolean emailExists(String email, Long id);
+    boolean emailExists(String email);
     boolean loginExists(String login);
     boolean loginExists(String login, Long id);
     boolean existById(Long id);

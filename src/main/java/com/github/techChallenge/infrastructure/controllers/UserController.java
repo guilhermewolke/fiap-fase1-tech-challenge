@@ -108,7 +108,7 @@ public class UserController implements IUserController {
     public ResponseEntity<Map<String, Object>> changePassword(
             @PathVariable("id") Long id,
             @Valid @RequestBody UserChangePasswordInputDTO dto) {
-        boolean sucess = this.changePasswordUser.ChangePassword(dto);
+        boolean sucess = this.changePasswordUser.changePassword(dto);
         if(!sucess){ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT);};
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);

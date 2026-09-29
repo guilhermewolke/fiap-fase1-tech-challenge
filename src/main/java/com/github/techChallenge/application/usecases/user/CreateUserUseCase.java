@@ -27,7 +27,7 @@ public class CreateUserUseCase extends UserUseCase {
                 dto.level(),
                 dto.address());
 
-        if (gateway.emailExists(user.getEmail(), user.getId()))
+        if (gateway.emailExists(user.getEmail()))
             throw new EmailAlreadyExistsException();
 
         if (gateway.loginExists(user.getLogin()))

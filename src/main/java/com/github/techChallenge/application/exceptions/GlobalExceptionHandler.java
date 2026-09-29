@@ -161,10 +161,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .getBindingResult()
                 .getFieldErrors()
                 .forEach(error ->
-                        violations.putIfAbsent(
-                                error.getField(),
-                                error.getDefaultMessage()
-                        )
+                    violations.putIfAbsent(
+                        error.getField(),
+                        error.getDefaultMessage()
+                    )
                 );
 
         ProblemDetail problemDetail = problemDetailFactory.create(

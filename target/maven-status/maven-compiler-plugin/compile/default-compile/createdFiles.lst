@@ -7,7 +7,6 @@ com/github/techChallenge/domain/user/dto/UserCreateOutputDTO.class
 com/github/techChallenge/domain/user/dto/UserUpdateInputDTO.class
 com/github/techChallenge/application/exceptions/InvalidPasswordException.class
 com/github/techChallenge/application/usecases/user/ListUserUseCase.class
-com/github/techChallenge/application/gateways/UserGateway$2.class
 com/github/techChallenge/application/exceptions/ProblemDetailFactory.class
 com/github/techChallenge/infrastructure/security/SecurityConfig.class
 com/github/techChallenge/application/gateways/UserGateway.class
@@ -20,7 +19,6 @@ com/github/techChallenge/shared/NotFoundException.class
 com/github/techChallenge/domain/user/IUserMapper.class
 com/github/techChallenge/application/usecases/user/FindUserUseCase.class
 com/github/techChallenge/shared/LoginAlreadyExistsException.class
-com/github/techChallenge/application/gateways/UserGateway$1.class
 com/github/techChallenge/shared/ConflictException.class
 com/github/techChallenge/application/usecases/user/UserUseCase.class
 com/github/techChallenge/application/usecases/user/DeleteUserUseCase.class
@@ -31,6 +29,7 @@ com/github/techChallenge/application/exceptions/DuplicateLoginException.class
 com/github/techChallenge/application/gateways/IUserGateway.class
 com/github/techChallenge/application/usecases/user/ChangePasswordUseCase.class
 com/github/techChallenge/domain/user/User.class
+com/github/techChallenge/application/usecases/user/ChangePasswordUseCase$1.class
 com/github/techChallenge/shared/EmailAlreadyExistsException.class
 com/github/techChallenge/application/usecases/user/CreateUserUseCase.class
 com/github/techChallenge/domain/user/dto/UserOutputDTO.class
@@ -38,6 +37,7 @@ com/github/techChallenge/infrastructure/config/UserConfig.class
 com/github/techChallenge/shared/UnauthorizedException.class
 com/github/techChallenge/application/exceptions/GlobalExceptionHandler.class
 com/github/techChallenge/infrastructure/controllers/IUserController.class
+com/github/techChallenge/application/validators/UserValidator$1.class
 com/github/techChallenge/infrastructure/controllers/UserController.class
 com/github/techChallenge/application/exceptions/GlobalExceptionHandler$1.class
 com/github/techChallenge/application/exceptions/BusinessException.class
