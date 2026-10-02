@@ -1,0 +1,5 @@
+CREATE DATABASE IF NOT EXISTS fiapdb_test;
+
+GRANT ALL PRIVILEGES ON fiapdb_test.* TO 'fiapdb'@'%';
+
+FLUSH PRIVILEGES;

@@ -33,7 +33,7 @@ public interface UserRepository
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE usuarios SET SENHA = :password WHERE LOGIN = :login", nativeQuery = true)
+    @Query(value = "UPDATE usuarios SET senha = :password WHERE login = :login", nativeQuery = true)
     int updatePasswordByLogin(@Param("login") String login, @Param("password") String password);
 
     boolean existsByEmailAndIdNot(String email, Long id);

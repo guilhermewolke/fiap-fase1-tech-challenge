@@ -130,13 +130,6 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.13</version>
-				<configuration>
-					<excludes>
-						<exclude>com/github/techChallenge/domain/user/dto/**</exclude>
-						<exclude>com/github/techChallenge/infrastructure/config/**</exclude>
-						<exclude>com/github/techChallenge/TechChallengeApplication.class</exclude>
-					</excludes>
-				</configuration>
 
 				<executions>
 					<execution>
@@ -152,7 +145,15 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
-
+						<configuration>
+							<excludes>
+								<exclude>com/github/techChallenge/domain/user/dto/**/*.class</exclude>
+								<exclude>com/github/techChallenge/application/exceptions/**/*.class</exclude>
+								<exclude>com/github/techChallenge/infrastructure/config/**/*.class</exclude>
+								<exclude>com/github/techChallenge/TechChallengeApplication.class</exclude>
+								<exclude>com/github/techChallenge/shared/**/*.class</exclude>
+							</excludes>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

@@ -27,10 +27,13 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE:-fiapdb}
       MYSQL_USER: ${SPRING_DATASOURCE_USERNAME:-fiapdb}
       MYSQL_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-fiapdb}
+    command:
+      --default-time-zone=-03:00
     ports:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       interval: 10s

@@ -1,8 +1,6 @@
 package com.github.techChallenge.infrastructure.repositories;
 
-import com.github.techChallenge.application.exceptions.DuplicateLoginException;
 import com.github.techChallenge.application.exceptions.UserNotFoundException;
-import com.github.techChallenge.application.gateways.IUserGateway;
 import com.github.techChallenge.application.repositories.IUserRepository;
 import com.github.techChallenge.domain.user.IUserMapper;
 import com.github.techChallenge.domain.user.User;
@@ -10,6 +8,7 @@ import com.github.techChallenge.infrastructure.entities.user.AddressEntity;
 import com.github.techChallenge.infrastructure.entities.user.UserEntity;
 import com.github.techChallenge.infrastructure.security.ISecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -67,13 +66,6 @@ public class UserRepositoryGateway implements IUserRepository {
         return this.mapper.fromEntityToDomain(entity.get());
     }
 
-    public User findByLogin(String login){
-        Optional<UserEntity> entity = this.repository.findByLogin(login.toUpperCase());
-        if (!entity.isPresent()) throw new UserNotFoundException("Usuário não encontrado");
-
-        return this.mapper.fromEntityToDomain(entity.get());
-    }
-
     @Override
     public Page<User> list(int page, int offset) {
         Pageable pageable = PageRequest.of(page, offset);
@@ -97,7 +89,6 @@ public class UserRepositoryGateway implements IUserRepository {
 
     @Override
     public boolean existsByLogin(String login) {
-        System.out.println(repository.existsByLoginIgnoreCase(login));
         return repository.existsByLoginIgnoreCase(login);
     }
 
@@ -105,17 +96,20 @@ public class UserRepositoryGateway implements IUserRepository {
           return repository.findPasswordByLogin(login);
     }
 
-    public boolean updatePasswordByLogin(String encryptPasword, String login){
-            if (!this.repository.findByLogin(login).isPresent()) {
-                throw new UserNotFoundException("Usuário não encontrado");
-            }
-            int countUpdateRows = repository.updatePasswordByLogin(login, encryptPasword);
+    public boolean updatePasswordByLogin(String encryptedPassword, String login){
+        Optional<UserEntity> entity = this.repository.findByLogin(login);
+        if (!entity.isPresent()) {
+            throw new UserNotFoundException("Usuário não encontrado");
+        }
 
-            if(countUpdateRows != 1){
-                throw new DuplicateLoginException("Existem mais de um ou nenhum login cadastrado");
-            }
-
+        UserEntity userEntity = entity.get();
+        userEntity.setPassword(encryptedPassword);
+        try {
+            this.repository.save(userEntity);
             return true;
+        } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
+            throw e;
+        }
 
     }
 
