@@ -34,7 +34,7 @@ public class UserLevelConfig {
     }
 
     @Bean
-    DeleteUserLevelUseCase deleteLevelUserUseCase(IUserLevelGateway gateway, UserLevelMapper mapper) {
+    DeleteUserLevelUseCase deleteUserLevelUseCase(IUserLevelGateway gateway, UserLevelMapper mapper) {
         return new DeleteUserLevelUseCase(gateway, mapper);
     }
 

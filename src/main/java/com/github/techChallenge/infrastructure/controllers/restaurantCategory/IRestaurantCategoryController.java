@@ -1,8 +1,8 @@
-package com.github.techChallenge.infrastructure.controllers.userlevel;
+package com.github.techChallenge.infrastructure.controllers.restaurantCategory;
 
-import com.github.techChallenge.domain.userlevel.dto.UserLevelCreateInputDTO;
-import com.github.techChallenge.domain.userlevel.dto.UserLevelOutputDTO;
-import com.github.techChallenge.domain.userlevel.dto.UserLevelUpdateInputDTO;
+import com.github.techChallenge.domain.restaurantCategory.dto.RestaurantCategoryCreateInputDTO;
+import com.github.techChallenge.domain.restaurantCategory.dto.RestaurantCategoryOutputDTO;
+import com.github.techChallenge.domain.restaurantCategory.dto.RestaurantCategoryUpdateInputDTO;
 import com.github.techChallenge.shared.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,27 +17,27 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 @Tag(
-    name="Usuários » Níveis",
-    description="API de gestão de níveis de usuário"
+    name="Restaurantes » Tipos",
+    description="API de gestão de tipos de restaurante"
 )
-public interface IUserLevelController {
+public interface IRestaurantCategoryController {
     @Operation(
-        summary = "Criação de novo nível de usuário"
+        summary = "Criação de novo tipo de restaurante"
     )
     @ApiResponses({
         @ApiResponse(
             responseCode = "201",
-            description = "Um objeto com os dados do nível de usuário criado",
+            description = "Um objeto com os dados do tipo de restaurante criado",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(
-                    implementation = UserLevelOutputDTO.class
+                    implementation = RestaurantCategoryOutputDTO.class
                 )
             )
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Ocorreu um erro com os dados do nível de usuário, durante a tentativa de criação",
+            description = "Ocorreu um erro com os dados do tipo de restaurante, durante a tentativa de criação",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(implementation = ApiErrorResponse.class)
@@ -53,7 +53,7 @@ public interface IUserLevelController {
         ),
         @ApiResponse(
             responseCode = "409",
-            description = "Já existe um nível de usuário cadastrado com o título informado",
+            description = "Já existe um tipo de restaurante cadastrado com o título informado",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(implementation = ApiErrorResponse.class)
@@ -68,26 +68,26 @@ public interface IUserLevelController {
             )
         )
     })
-    ResponseEntity<UserLevelOutputDTO> create(
-        @Parameter(description = "Dados para criação de novo nível de usuário")
-        UserLevelCreateInputDTO dto
+    ResponseEntity<RestaurantCategoryOutputDTO> create(
+        @Parameter(description = "Dados para criação de novo tipo de restaurante")
+        RestaurantCategoryCreateInputDTO dto
     );
 
     @Operation(
-        summary = "Atualização de dados do usuário"
+        summary = "Atualização de dados do tipo de restaurante"
     )
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "O nível de usuário foi modificado com sucesso",
+            description = "O tipo de restaurante foi modificado com sucesso",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = UserLevelOutputDTO.class)
+                schema = @Schema(implementation = RestaurantCategoryOutputDTO.class)
             )
         ),
         @ApiResponse(
             responseCode = "400",
-            description = "Ocorreu um erro com os dados do nível de usuário, durante a tentativa de atualização",
+            description = "Ocorreu um erro com os dados do tipo de restaurante, durante a tentativa de atualização",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(implementation = ApiErrorResponse.class)
@@ -103,7 +103,7 @@ public interface IUserLevelController {
         ),
         @ApiResponse(
             responseCode = "404",
-            description = "O nível de usuário que se deseja atualizar não foi encontrado",
+            description = "O tipo de restaurante que se deseja atualizar não foi encontrado",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(implementation = ApiErrorResponse.class)
@@ -111,7 +111,7 @@ public interface IUserLevelController {
         ),
         @ApiResponse(
             responseCode = "409",
-            description = "O título informado já pertence a outro nível de usuário",
+            description = "O título informado já pertence a outro tipo de restaurante",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(implementation = ApiErrorResponse.class)
@@ -126,10 +126,10 @@ public interface IUserLevelController {
             )
         )
     })
-    ResponseEntity<UserLevelOutputDTO> update(
-        @Parameter(description = "Dados para edição de novo usuário")
-        UserLevelUpdateInputDTO dto,
-        @Parameter(description = "ID do usuário a ser editado")
+    ResponseEntity<RestaurantCategoryOutputDTO> update(
+        @Parameter(description = "Dados para edição de novo tipo de restaurante")
+        RestaurantCategoryUpdateInputDTO dto,
+        @Parameter(description = "ID do tipo de restaurante a ser editado")
         int id);
 
     @Operation(
@@ -138,10 +138,10 @@ public interface IUserLevelController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Busca com sucesso de nível de usuário pelo seu ID",
+            description = "Busca com sucesso de tipo de restaurante pelo seu ID",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
-                schema = @Schema(implementation = UserLevelOutputDTO.class)
+                schema = @Schema(implementation = RestaurantCategoryOutputDTO.class)
             )
         ),
         @ApiResponse(
@@ -154,7 +154,7 @@ public interface IUserLevelController {
         ),
         @ApiResponse(
             responseCode = "404",
-            description = "Nível de usuário não encontrado",
+            description = "Tipo de restaurante não encontrado",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(implementation = ApiErrorResponse.class)
@@ -169,8 +169,8 @@ public interface IUserLevelController {
             )
         )
     })
-    ResponseEntity<UserLevelOutputDTO> findByID(
-        @Parameter(description = "ID do nível de usuário a ser localizado")
+    ResponseEntity<RestaurantCategoryOutputDTO> findByID(
+        @Parameter(description = "ID do tipo de restaurante a ser localizado")
         int id
     );
 
@@ -180,10 +180,10 @@ public interface IUserLevelController {
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "Listar todos os níveis de usuário",
+            description = "Listar todos os níveis de restaurante",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
-                array= @ArraySchema(schema = @Schema(implementation = UserLevelOutputDTO.class))
+                array= @ArraySchema(schema = @Schema(implementation = RestaurantCategoryOutputDTO.class))
             )
         ),
         @ApiResponse(
@@ -203,19 +203,19 @@ public interface IUserLevelController {
             )
         )
     })
-    ResponseEntity<Page<UserLevelOutputDTO>> list(
+    ResponseEntity<Page<RestaurantCategoryOutputDTO>> list(
         @Parameter(description = "Página da paginação da listagem. Valor padrão '0'.", example = "0", required = false)
         int page,
         @Parameter(description = "Quantidade de registros por página. Valor padrão '10'.", example = "10", required = false)
         int offset);
 
     @Operation(
-        summary = "Remover nível de usuário"
+        summary = "Remover tipo de restaurante"
     )
     @ApiResponses({
         @ApiResponse(
             responseCode = "204",
-            description = "O nível de usuário foi removido com sucesso. A resposta não possui corpo.",
+            description = "O tipo de restaurante foi removido com sucesso. A resposta não possui corpo.",
             content = @Content
         ),
         @ApiResponse(
@@ -228,7 +228,7 @@ public interface IUserLevelController {
         ),
         @ApiResponse(
             responseCode = "404",
-            description = "O nível de usuário que se deseja remover não foi encontrado",
+            description = "O tipo de restaurante que se deseja remover não foi encontrado",
             content = @Content(
                 mediaType = MediaType.APPLICATION_JSON_VALUE,
                 schema = @Schema(implementation = ApiErrorResponse.class)
@@ -244,6 +244,6 @@ public interface IUserLevelController {
         )
     })
     ResponseEntity<Void> delete(
-        @Parameter(description = "ID do nível de usuário a ser removido")
+        @Parameter(description = "ID do tipo de restaurante a ser removido")
         int id);
 }
