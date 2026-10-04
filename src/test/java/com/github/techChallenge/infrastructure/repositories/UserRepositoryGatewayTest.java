@@ -3,7 +3,7 @@ package com.github.techChallenge.infrastructure.repositories;
 import com.github.techChallenge.application.exceptions.UserNotFoundException;
 import com.github.techChallenge.domain.user.Address;
 import com.github.techChallenge.domain.user.User;
-import com.github.techChallenge.domain.user.UserLevel;
+import com.github.techChallenge.infrastructure.repositories.user.UserRepositoryGateway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Sql(scripts = {"/truncate_table_users.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = {"/truncate_table_users.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = {"/00_cleanup-tables.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"/00_cleanup-tables.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @Transactional
 class UserRepositoryGatewayTest {
 
@@ -36,7 +36,6 @@ class UserRepositoryGatewayTest {
                 "user@user.com.br",
                 "user",
                 "password",
-                UserLevel.CUSTOMER,
                 new Address(
                     "Endereço",
                     "numero",
@@ -70,10 +69,11 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve atualizar um usuário já existente no banco de dados")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldUpdateAnExistingUserOnDatabase() {
         User user = userRepositoryGateway.findByID(1L);
-        user.update("Usuário alterado", "email alterado", "login alterado", UserLevel.CUSTOMER,
+        user.update("Usuário alterado", "email alterado", "login alterado",
                 new Address(
                     "endereço alterado",
                     "numero alterado",
@@ -105,26 +105,27 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve lançar uma exception caso tente editar um usuário que não existe")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldThrowAnExceptionOnTryingToUpdateAnUserThatDoesNotExists() {
         User user = userRepositoryGateway.findByID(1L);
-        user.update("Usuário alterado", "email alterado", "login alterado", UserLevel.CUSTOMER,
-                new Address(
-                        "endereço alterado",
-                        "numero alterado",
-                        "complemento alterado",
-                        "89101-121",
-                        "Bairro alterado",
-                        "cidade alterado",
-                        "uf alterado",
-                        "Argentina"
+        user.update("Usuário alterado", "email alterado", "login alterado", new Address(
+                    "endereço alterado",
+                    "numero alterado",
+                    "complemento alterado",
+                    "89101-121",
+                    "Bairro alterado",
+                    "cidade alterado",
+                    "uf alterado",
+                    "Argentina"
                 ));
         assertThrows(UserNotFoundException.class, () ->  userRepositoryGateway.update(user, 4L));
     }
 
     @Test
     @DisplayName("Deve retornar uma lista de usuários cujo nome seja parecido com o texto enviado para busca")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnAListWithUsersWhichNameMatchesTheKeywordSent() {
         Page<User> usersList = userRepositoryGateway.listByName("Usuário", 0, 10);
         User firstUser = usersList.getContent().getFirst();
@@ -133,7 +134,7 @@ class UserRepositoryGatewayTest {
         assertEquals("Usuário 1", firstUser.getName());
         assertEquals(LocalDateTime.parse("2026-09-30T17:47:40"), firstUser.getCreatedAt());
         assertEquals("email@email.com.br", firstUser.getEmail());
-        assertEquals(UserLevel.OWNER, firstUser.getLevel());
+        assertEquals("email@email.com.br", firstUser.getEmail());
         assertEquals("user1", firstUser.getLogin());
         assertEquals("Rua 1", firstUser.getAddress().address());
         assertEquals("Cidade", firstUser.getAddress().city());
@@ -148,7 +149,6 @@ class UserRepositoryGatewayTest {
         assertEquals("Usuário 3", lastUser.getName());
         assertEquals(LocalDateTime.parse("2026-10-01T11:22:40"), lastUser.getCreatedAt());
         assertEquals("email3@email.com.br", lastUser.getEmail());
-        assertEquals(UserLevel.OWNER, lastUser.getLevel());
         assertEquals("user3", lastUser.getLogin());
         assertEquals("Rua 3", lastUser.getAddress().address());
         assertEquals("Cidade 3", lastUser.getAddress().city());
@@ -162,7 +162,8 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve localizar um usuário pelo seu ID")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnAnUserFindingHimByHisID() {
         User user = userRepositoryGateway.findByID(2L);
 
@@ -171,7 +172,6 @@ class UserRepositoryGatewayTest {
         assertEquals(LocalDateTime.parse("2026-09-30T18:30:40"), user.getCreatedAt());
         assertEquals(LocalDateTime.parse("2026-09-30T18:30:40"), user.getUpdatedAt());
         assertEquals("email2@email.com.br", user.getEmail());
-        assertEquals(UserLevel.CUSTOMER, user.getLevel());
         assertEquals("user2", user.getLogin());
         assertEquals("Rua 2", user.getAddress().address());
         assertEquals("Cidade 2", user.getAddress().city());
@@ -185,7 +185,8 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve lançar uma exception caso não consiga localizar um usuário pelo ID")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldThrowAnExceptionIfUserWasNotFound() {
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userRepositoryGateway.findByID(7L));
         assertEquals("Usuário não encontrado", exception.getMessage());
@@ -193,7 +194,8 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve retornar uma lista de usuários")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnAnUserList() {
         Page<User> usersList = userRepositoryGateway.list(0, 10);
         User firstUser = usersList.getContent().getFirst();
@@ -204,7 +206,6 @@ class UserRepositoryGatewayTest {
         assertEquals("Usuário 1", firstUser.getName());
         assertEquals(LocalDateTime.parse("2026-09-30T17:47:40"), firstUser.getCreatedAt());
         assertEquals("email@email.com.br", firstUser.getEmail());
-        assertEquals(UserLevel.OWNER, firstUser.getLevel());
         assertEquals("user1", firstUser.getLogin());
         assertEquals("Rua 1", firstUser.getAddress().address());
         assertEquals("Cidade", firstUser.getAddress().city());
@@ -220,7 +221,6 @@ class UserRepositoryGatewayTest {
         assertEquals(LocalDateTime.parse("2026-09-30T18:30:40"), secondUser.getCreatedAt());
         assertEquals(LocalDateTime.parse("2026-09-30T18:30:40"), secondUser.getUpdatedAt());
         assertEquals("email2@email.com.br", secondUser.getEmail());
-        assertEquals(UserLevel.CUSTOMER, secondUser.getLevel());
         assertEquals("user2", secondUser.getLogin());
         assertEquals("Rua 2", secondUser.getAddress().address());
         assertEquals("Cidade 2", secondUser.getAddress().city());
@@ -235,7 +235,6 @@ class UserRepositoryGatewayTest {
         assertEquals("Usuário 3", lastUser.getName());
         assertEquals(LocalDateTime.parse("2026-10-01T11:22:40"), lastUser.getCreatedAt());
         assertEquals("email3@email.com.br", lastUser.getEmail());
-        assertEquals(UserLevel.OWNER, lastUser.getLevel());
         assertEquals("user3", lastUser.getLogin());
         assertEquals("Rua 3", lastUser.getAddress().address());
         assertEquals("Cidade 3", lastUser.getAddress().city());
@@ -249,7 +248,8 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve remover um usuário pelo ID")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldRemoveAndUserByItsID() {
         userRepositoryGateway.delete(1L);
 
@@ -259,7 +259,8 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve lançar uma exception caso não consiga remover um usuário, pois nenhum usuário com o ID informado foi localizado")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldThrowAnExceptionOnTryingToDeleteAnInexistentUser() {
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userRepositoryGateway.delete(7L));
         assertEquals("Usuário não encontrado", exception.getMessage());
@@ -267,28 +268,32 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve retornar true se já existir algum usuário com o email informado")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnTrueIfThereIsAlreadyAnUserWithThisEmail() {
         assertTrue(userRepositoryGateway.existsByEmail("email@email.com.br"));
     }
 
     @Test
     @DisplayName("Deve retornar false se não existir algum usuário com o email informado")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnFalseIfThereAreNotAnyUsersWithThisEmail() {
         assertFalse(userRepositoryGateway.existsByEmail("email_@email.com.br"));
     }
 
     @Test
     @DisplayName("Deve retornar true se já existir algum usuário com o login informado")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnTrueIfThereIsAlreadyAnUserWithThisLogin() {
         assertTrue(userRepositoryGateway.existsByLogin("user1"));
     }
 
     @Test
     @DisplayName("Deve retornar false se não existir algum usuário com o login informado")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnFalseIfThereAreNotAnyUsersWithThisLogin() {
         assertFalse(userRepositoryGateway.existsByLogin("user10"));
     }
@@ -300,7 +305,8 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve atualizar a senha do usuário pelo login")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldUpdateAnUsersPasswordByHisLogin() {
         String newEncryptedPassword = "pitipiripitipiripitipó";
         boolean success = userRepositoryGateway.updatePasswordByLogin(newEncryptedPassword, "user1");
@@ -311,7 +317,8 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve lançar exception se não localizar nenhum usuário com o login")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldThrowAnExceptionWhenUserWasNotFoundDuringPasswordUpdating() {
         String newEncryptedPassword = "pitipiripitipiripitipó";
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userRepositoryGateway.updatePasswordByLogin(newEncryptedPassword, "user11"));
@@ -320,42 +327,48 @@ class UserRepositoryGatewayTest {
 
     @Test
     @DisplayName("Deve retornar true se existir algum usuário com o email informado, e com id diferente")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnTrueIfThereIsAnUserWithThisEmailAndDifferentID() {
         assertTrue(userRepositoryGateway.existsByEmailAndIdNot("email2@email.com.br", 1L));
     }
 
     @Test
     @DisplayName("Deve retornar false se não existir algum usuário com o email informado, e com id diferente")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnFalseIfThereAreNotAnyUsersWithThisEmailAndDifferentID() {
         assertFalse(userRepositoryGateway.existsByEmailAndIdNot("email@email.com.br", 1L));
     }
 
     @Test
     @DisplayName("Deve retornar true se existir algum usuário com o login informado, e com id diferente")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnTrueIfThereIsAnUserWithThisLoginAndDifferentID() {
         assertTrue(userRepositoryGateway.existsByLoginAndIdNot("user2", 1L));
     }
 
     @Test
     @DisplayName("Deve retornar false se não existir algum usuário com o login informado, e com id diferente")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnFalseIfThereAreNotAnyUsersWithThisLoginAndDifferentID() {
         assertFalse(userRepositoryGateway.existsByLoginAndIdNot("user1", 1L));
     }
 
     @Test
     @DisplayName("Deve retornar true se existir algum usuário com o ID informado")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnTrueIfThereIsAnUserWithThisID() {
         assertTrue(userRepositoryGateway.existsById(1L));
     }
 
     @Test
     @DisplayName("Deve retornar false se não existir algum usuário com o ID informado")
-    @Sql(scripts = "/users_samples.sql")
+    @Sql(scripts = "/01_users_level_samples.sql")
+    @Sql(scripts = "/02_users_samples.sql")
     void shouldReturnFalseIfThereAreNotAnyUsersWithThisID() {
         assertFalse(userRepositoryGateway.existsById(11L));
     }

@@ -3,12 +3,12 @@ package com.github.techChallenge.application.usecases.user;
 import com.github.techChallenge.application.exceptions.DuplicateEmailException;
 import com.github.techChallenge.application.exceptions.DuplicateLoginException;
 import com.github.techChallenge.application.exceptions.UserNotFoundException;
-import com.github.techChallenge.application.gateways.IUserGateway;
+import com.github.techChallenge.application.gateways.user.IUserGateway;
 import com.github.techChallenge.application.validators.UserValidator;
 import com.github.techChallenge.domain.user.Address;
 import com.github.techChallenge.domain.user.IUserMapper;
 import com.github.techChallenge.domain.user.User;
-import com.github.techChallenge.domain.user.UserLevel;
+import com.github.techChallenge.domain.userlevel.UserLevel;
 import com.github.techChallenge.domain.user.dto.UserOutputDTO;
 import com.github.techChallenge.domain.user.dto.UserUpdateInputDTO;
 import org.junit.jupiter.api.Assertions;
@@ -51,7 +51,7 @@ class UpdateUserUseCaseTest {
                 "UF","Brasil");
 
         this.user = new User(1L, "User 1", "user@user.com.br", "user", "password",
-                UserLevel.CUSTOMER, address, LocalDateTime.now(), LocalDateTime.now());
+                null, address, LocalDateTime.now(), LocalDateTime.now());
 
     }
 
@@ -64,7 +64,7 @@ class UpdateUserUseCaseTest {
             "email alterado",
             "login alterado",
             "password alterado",
-            UserLevel.OWNER,
+            null,
             new Address("Rua 2","1234","N/A alterado",
                     "11235-900","Bairro alterado","Cidade alterado",
                     "UF alterado","Argentinha"),
@@ -77,7 +77,7 @@ class UpdateUserUseCaseTest {
             mockUpdatedUser.getName(),
             mockUpdatedUser.getEmail(),
             mockUpdatedUser.getLogin(),
-            mockUpdatedUser.getLevel(),
+            null,
             mockUpdatedUser.getAddress(),
             mockUpdatedUser.getCreatedAt(),
             mockUpdatedUser.getUpdatedAt());
@@ -89,7 +89,7 @@ class UpdateUserUseCaseTest {
         when(mapper.fromDomainToOutputDTO(mockUpdatedUser)).thenReturn(convertedOutputDTO);
 
         UserUpdateInputDTO inputDTO = new UserUpdateInputDTO("User 1","user@user.com.br",
-                "user", UserLevel.CUSTOMER, new Address("Rua 2","1234","N/A alterado",
+                "user", new Address("Rua 2","1234","N/A alterado",
                 "11235-900","Bairro alterado","Cidade alterado",
                 "UF alterado","Argentinha"));
 
@@ -101,7 +101,6 @@ class UpdateUserUseCaseTest {
         assertNotEquals(outputDTO.createdAt(), outputDTO.updatedAt());
         Assertions.assertEquals(mockUpdatedUser.getEmail(), outputDTO.email());
         Assertions.assertEquals(mockUpdatedUser.getLogin(), outputDTO.login());
-        Assertions.assertEquals(mockUpdatedUser.getLevel(), outputDTO.level());
         Assertions.assertEquals(mockUpdatedUser.getName(), outputDTO.name());
         Assertions.assertEquals(mockUpdatedUser.getAddress().address(), outputDTO.address().address());
         Assertions.assertEquals(mockUpdatedUser.getAddress().city(), outputDTO.address().city());
@@ -122,7 +121,7 @@ class UpdateUserUseCaseTest {
                 "email alterado",
                 "login alterado",
                 "password alterado",
-                UserLevel.OWNER,
+                null,
                 new Address("Rua 2","1234","N/A alterado",
                         "11235-900","Bairro alterado","Cidade alterado",
                         "UF alterado","Argentinha"),
@@ -135,7 +134,7 @@ class UpdateUserUseCaseTest {
                 mockUpdatedUser.getName(),
                 mockUpdatedUser.getEmail(),
                 mockUpdatedUser.getLogin(),
-                mockUpdatedUser.getLevel(),
+                null,
                 mockUpdatedUser.getAddress(),
                 mockUpdatedUser.getCreatedAt(),
                 mockUpdatedUser.getUpdatedAt());
@@ -143,7 +142,7 @@ class UpdateUserUseCaseTest {
         when(gateway.existById(any(Long.class))).thenReturn(false);
 
         UserUpdateInputDTO inputDTO = new UserUpdateInputDTO("User 1","user@user.com.br",
-                "user", UserLevel.CUSTOMER, new Address("Rua 2","1234","N/A alterado",
+                "user", new Address("Rua 2","1234","N/A alterado",
                 "11235-900","Bairro alterado","Cidade alterado",
                 "UF alterado","Argentinha"));
 
@@ -160,7 +159,7 @@ class UpdateUserUseCaseTest {
                 "email alterado",
                 "login alterado",
                 "password alterado",
-                UserLevel.OWNER,
+                null,
                 new Address("Rua 2","1234","N/A alterado",
                         "11235-900","Bairro alterado","Cidade alterado",
                         "UF alterado","Argentinha"),
@@ -173,7 +172,7 @@ class UpdateUserUseCaseTest {
                 mockUpdatedUser.getName(),
                 mockUpdatedUser.getEmail(),
                 mockUpdatedUser.getLogin(),
-                mockUpdatedUser.getLevel(),
+                null,
                 mockUpdatedUser.getAddress(),
                 mockUpdatedUser.getCreatedAt(),
                 mockUpdatedUser.getUpdatedAt());
@@ -182,7 +181,7 @@ class UpdateUserUseCaseTest {
         when(validator.emailExists(any(String.class), any(Long.class))).thenReturn(true);
 
         UserUpdateInputDTO inputDTO = new UserUpdateInputDTO("User 1","user@user.com.br",
-                "user", UserLevel.CUSTOMER, new Address("Rua 2","1234","N/A alterado",
+                "user", new Address("Rua 2","1234","N/A alterado",
                 "11235-900","Bairro alterado","Cidade alterado",
                 "UF alterado","Argentinha"));
 
@@ -198,7 +197,7 @@ class UpdateUserUseCaseTest {
                 "email alterado",
                 "login alterado",
                 "password alterado",
-                UserLevel.OWNER,
+                null,
                 new Address("Rua 2","1234","N/A alterado",
                         "11235-900","Bairro alterado","Cidade alterado",
                         "UF alterado","Argentinha"),
@@ -211,7 +210,7 @@ class UpdateUserUseCaseTest {
                 mockUpdatedUser.getName(),
                 mockUpdatedUser.getEmail(),
                 mockUpdatedUser.getLogin(),
-                mockUpdatedUser.getLevel(),
+                null,
                 mockUpdatedUser.getAddress(),
                 mockUpdatedUser.getCreatedAt(),
                 mockUpdatedUser.getUpdatedAt());
@@ -221,7 +220,7 @@ class UpdateUserUseCaseTest {
         when(validator.loginExists(any(String.class), any(Long.class))).thenReturn(true);
 
         UserUpdateInputDTO inputDTO = new UserUpdateInputDTO("User 1","user@user.com.br",
-                "user", UserLevel.CUSTOMER, new Address("Rua 2","1234","N/A alterado",
+                "user", new Address("Rua 2","1234","N/A alterado",
                 "11235-900","Bairro alterado","Cidade alterado",
                 "UF alterado","Argentinha"));
 

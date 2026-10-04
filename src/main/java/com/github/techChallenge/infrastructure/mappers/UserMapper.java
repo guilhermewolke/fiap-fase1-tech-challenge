@@ -4,12 +4,17 @@ import com.github.techChallenge.domain.user.Address;
 import com.github.techChallenge.domain.user.IUserMapper;
 import com.github.techChallenge.domain.user.User;
 import com.github.techChallenge.domain.user.dto.UserOutputDTO;
+import com.github.techChallenge.domain.userlevel.IUserLevelMapper;
 import com.github.techChallenge.infrastructure.entities.user.UserEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper implements IUserMapper {
+
+    @Autowired
+    private UserLevelMapper userLevelMapper;
     @Override
     public User fromEntityToDomain(UserEntity userEntity) {
         Address address = new Address(
@@ -29,7 +34,7 @@ public class UserMapper implements IUserMapper {
             userEntity.getEmail(),
             userEntity.getLogin(),
             userEntity.getPassword(),
-            userEntity.getLevel(),
+            userLevelMapper.fromEntityToDomain(userEntity.getLevel()),
             address,
             userEntity.getCreatedAt(),
             userEntity.getUpdatedAt()
@@ -44,7 +49,7 @@ public class UserMapper implements IUserMapper {
             user.getName(),
             user.getEmail(),
             user.getLogin(),
-            user.getLevel(),
+            userLevelMapper.fromDomainToOutputDTO(user.getLevel()),
             user.getAddress(),
             user.getCreatedAt(),
             user.getUpdatedAt()
@@ -71,7 +76,7 @@ public class UserMapper implements IUserMapper {
                     u.getEmail(),
                     u.getLogin(),
                     null,
-                    u.getLevel(),
+                    userLevelMapper.fromEntityToDomain(u.getLevel()),
                     address,
                     u.getCreatedAt(),
                     u.getUpdatedAt()
@@ -83,14 +88,14 @@ public class UserMapper implements IUserMapper {
     public Page<UserOutputDTO> fromDomainPageToOutputDTOPage(Page<User> domainPage) {
         return domainPage.map(u -> {
             return new UserOutputDTO(
-                    u.getId(),
-                    u.getName(),
-                    u.getEmail(),
-                    u.getLogin(),
-                    u.getLevel(),
-                    u.getAddress(),
-                    u.getCreatedAt(),
-                    u.getUpdatedAt()
+                u.getId(),
+                u.getName(),
+                u.getEmail(),
+                u.getLogin(),
+                userLevelMapper.fromDomainToOutputDTO(u.getLevel()),
+                u.getAddress(),
+                u.getCreatedAt(),
+                u.getUpdatedAt()
             );
         });
     }

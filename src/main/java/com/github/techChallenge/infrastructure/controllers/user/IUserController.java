@@ -1,4 +1,4 @@
-package com.github.techChallenge.infrastructure.controllers;
+package com.github.techChallenge.infrastructure.controllers.user;
 
 import com.github.techChallenge.domain.user.dto.*;
 import com.github.techChallenge.shared.ApiErrorResponse;
@@ -383,4 +383,53 @@ public interface IUserController {
             @Parameter(description = "Credenciais de login e senha")
             UserAuthInputDTO dto
     );
+
+    @Operation(
+            summary = "Adição de um usuário à um nível de usuário"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "O usuário foi modificado com sucesso",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = UserOutputDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Ocorreu um erro com os dados do usuário, durante a tentativa de atualização",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ApiErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Você não tem permissão para realizar esta ação",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ApiErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "O usuário que se deseja adicionar, ou o nível que se deseja atribuir este usuário não foram encontrados",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ApiErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Ocorreu um erro do lado do servidor",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ApiErrorResponse.class)
+                    )
+            )
+    })
+    ResponseEntity<UserOutputDTO> grantLevel(
+            @Parameter(description = "Dados para atribuição de nível do usuário")
+            GrantUserLevelInputDTO dto);
 }

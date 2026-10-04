@@ -1,9 +1,8 @@
 package com.github.techChallenge.domain.user.dto;
 
 import com.github.techChallenge.domain.user.Address;
-import com.github.techChallenge.domain.user.UserLevel;
+import com.github.techChallenge.domain.userlevel.UserLevel;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.EnumeratedValue;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
@@ -46,14 +45,6 @@ public record UserUpdateInputDTO(
                 message = "O login deve possuir entre 4 e 100 caracteres."
         )
         String login,
-
-        @Schema(
-                description = "Nível de acesso do usuário",
-                requiredMode = Schema.RequiredMode.REQUIRED,
-                allowableValues = {"OWNER", "CUSTOMER"}
-        )
-        @NotNull(message = "O tipo do usuário é obrigatório. Valores aceitos: OWNER, CUSTOMER.")
-        UserLevel level,
 
         @Schema(
                 description = "Endereço do usuário",

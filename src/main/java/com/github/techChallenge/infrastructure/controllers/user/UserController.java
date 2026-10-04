@@ -1,4 +1,4 @@
-package com.github.techChallenge.infrastructure.controllers;
+package com.github.techChallenge.infrastructure.controllers.user;
 
 import com.github.techChallenge.application.usecases.user.*;
 import com.github.techChallenge.application.validators.UserValidator;
@@ -27,12 +27,15 @@ public class UserController implements IUserController {
     private final DeleteUserUseCase deleteUserUseCase;
     private final UserValidator     userValidator;
     private final ChangePasswordUseCase changePasswordUser;
+    private final GrantUserLevelUseCase grantUserLevelUseCase;
 
     public UserController(CreateUserUseCase createUserUseCase,
                           UpdateUserUseCase updateUserUseCase,
                           FindUserUseCase findUserUseCase,
                           ListUserUseCase listUserUseCase,
-                          DeleteUserUseCase deleteUserUseCase, UserValidator userValidator, ChangePasswordUseCase changePasswordUser
+                          DeleteUserUseCase deleteUserUseCase, UserValidator userValidator,
+                          ChangePasswordUseCase changePasswordUser,
+                          GrantUserLevelUseCase grantUserLevelUseCase
     ) {
         this.createUserUseCase = createUserUseCase;
         this.updateUserUseCase = updateUserUseCase;
@@ -41,6 +44,7 @@ public class UserController implements IUserController {
         this.deleteUserUseCase = deleteUserUseCase;
         this.userValidator = userValidator;
         this.changePasswordUser = changePasswordUser;
+        this.grantUserLevelUseCase = grantUserLevelUseCase;
     }
 
     @PostMapping("/")
@@ -126,6 +130,14 @@ public class UserController implements IUserController {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Usuário autenticado");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @PatchMapping("/grant-level")
+    public ResponseEntity<UserOutputDTO> grantLevel(GrantUserLevelInputDTO dto) {
+        UserOutputDTO response = this.grantUserLevelUseCase.execute(dto);
 
         return ResponseEntity.ok(response);
     }

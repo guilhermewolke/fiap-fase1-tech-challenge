@@ -1,4 +1,4 @@
-package com.github.techChallenge.infrastructure.repositories;
+package com.github.techChallenge.infrastructure.repositories.user;
 
 import com.github.techChallenge.infrastructure.entities.user.UserEntity;
 import org.springframework.data.domain.Page;
@@ -13,13 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository
-        extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
-    Page<UserEntity> findByNameContainingIgnoreCase(
-            String name,
-            Pageable pageable
-    );
+    Page<UserEntity> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     boolean existsByEmailIgnoreCase(String email);
 
@@ -30,11 +26,6 @@ public interface UserRepository
 
     @Query(value = "SELECT * FROM usuarios WHERE login = :login", nativeQuery = true)
     Optional<UserEntity> findByLogin(@Param("login") String login);
-
-    @Modifying
-    @Transactional
-    @Query(value = "UPDATE usuarios SET senha = :password WHERE login = :login", nativeQuery = true)
-    int updatePasswordByLogin(@Param("login") String login, @Param("password") String password);
 
     boolean existsByEmailAndIdNot(String email, Long id);
     boolean existsByLoginAndIdNot(String login, Long id);

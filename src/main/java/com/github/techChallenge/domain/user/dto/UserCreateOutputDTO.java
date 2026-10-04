@@ -1,7 +1,7 @@
 package com.github.techChallenge.domain.user.dto;
 
 import com.github.techChallenge.domain.user.Address;
-import com.github.techChallenge.domain.user.UserLevel;
+import com.github.techChallenge.domain.userlevel.UserLevel;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;

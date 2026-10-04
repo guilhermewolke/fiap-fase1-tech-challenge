@@ -1,5 +1,7 @@
 package com.github.techChallenge.domain.user;
 
+import com.github.techChallenge.domain.userlevel.UserLevel;
+
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -45,7 +47,6 @@ public class User {
             String email,
             String login,
             String password,
-            UserLevel level,
             Address address
     ) {
         LocalDateTime now = LocalDateTime.now();
@@ -63,7 +64,7 @@ public class User {
                 email,
                 login,
                 password,
-                level,
+                null,
                 address,
                 now,
                 now
@@ -74,7 +75,6 @@ public class User {
             String name,
             String email,
             String login,
-            UserLevel level,
             Address address
     ) {
 
@@ -89,7 +89,6 @@ public class User {
         this.name = name;
         this.email = email;
         this.login = login;
-        this.level = level;
         this.address = address;
         this.updatedAt = LocalDateTime.now();
     }
@@ -99,6 +98,9 @@ public class User {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void grantLevel(UserLevel userLevel) {
+        this.level = userLevel;
+    }
 
 
     public Long getId() {

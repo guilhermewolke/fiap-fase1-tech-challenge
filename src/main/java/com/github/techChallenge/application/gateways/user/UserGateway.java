@@ -1,11 +1,12 @@
-package com.github.techChallenge.application.gateways;
+package com.github.techChallenge.application.gateways.user;
 
-import com.github.techChallenge.application.exceptions.InvalidPasswordException;
+import com.github.techChallenge.application.repositories.IUserLevelRepository;
 import com.github.techChallenge.domain.user.IUserMapper;
 import com.github.techChallenge.domain.user.User;
 import com.github.techChallenge.application.repositories.IUserRepository;
+import com.github.techChallenge.domain.user.dto.GrantUserLevelInputDTO;
+import com.github.techChallenge.domain.userlevel.UserLevel;
 import com.github.techChallenge.infrastructure.security.ISecurityConfig;
-import com.github.techChallenge.shared.UnauthorizedException;
 import org.springframework.data.domain.Page;
 
 public class UserGateway implements IUserGateway {
@@ -13,11 +14,14 @@ public class UserGateway implements IUserGateway {
     private final IUserRepository repository;
     private final ISecurityConfig securityConfig;
     private final IUserMapper mapper;
+    private final IUserLevelRepository userLevelRepository;
 
-    public UserGateway(IUserRepository repository, IUserMapper mapper,ISecurityConfig securityConfig) {
+    public UserGateway(IUserRepository repository, IUserMapper mapper,ISecurityConfig securityConfig,
+                       IUserLevelRepository userLevelRepository) {
         this.repository = repository;
         this.securityConfig = securityConfig;
         this.mapper = mapper;
+        this.userLevelRepository = userLevelRepository;
     }
 
     @Override
@@ -65,6 +69,16 @@ public class UserGateway implements IUserGateway {
 
     public boolean changePassword(String encodedPassword, String Login){
         return repository.updatePasswordByLogin(encodedPassword, Login);
+    }
+
+    @Override
+    public User grantUserLevel(GrantUserLevelInputDTO dto) {
+        User user = this.repository.findByID(dto.userID());
+        UserLevel userLevel = this.userLevelRepository.findByID(dto.userLevelID());
+
+        user.grantLevel(userLevel);
+        user = this.repository.update(user, dto.userID());
+        return user;
     }
 
     @Override

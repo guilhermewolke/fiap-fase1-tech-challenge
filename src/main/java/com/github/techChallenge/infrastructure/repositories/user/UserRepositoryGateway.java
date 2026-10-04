@@ -1,13 +1,12 @@
-package com.github.techChallenge.infrastructure.repositories;
+package com.github.techChallenge.infrastructure.repositories.user;
 
 import com.github.techChallenge.application.exceptions.UserNotFoundException;
 import com.github.techChallenge.application.repositories.IUserRepository;
 import com.github.techChallenge.domain.user.IUserMapper;
 import com.github.techChallenge.domain.user.User;
+import com.github.techChallenge.domain.userlevel.IUserLevelMapper;
 import com.github.techChallenge.infrastructure.entities.user.AddressEntity;
 import com.github.techChallenge.infrastructure.entities.user.UserEntity;
-import com.github.techChallenge.infrastructure.security.ISecurityConfig;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,12 +16,17 @@ import java.util.Optional;
 
 public class UserRepositoryGateway implements IUserRepository {
 
-    @Autowired
     private UserRepository repository;
-    @Autowired
-    private ISecurityConfig securityConfig;
-    @Autowired
+
     private IUserMapper mapper;
+
+    private IUserLevelMapper userLevelMapper;
+
+    public UserRepositoryGateway(UserRepository repository, IUserMapper mapper, IUserLevelMapper userLevelMapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+        this.userLevelMapper = userLevelMapper;
+    }
 
     @Override
     public User create(User user) {
@@ -41,10 +45,12 @@ public class UserRepositoryGateway implements IUserRepository {
         UserEntity userEntity = entity.get();
         userEntity.setName(user.getName());
         userEntity.setLogin(user.getLogin());
-        userEntity.setLevel(user.getLevel());
         userEntity.setEmail(user.getEmail());
         userEntity.setUpdatedAt(user.getUpdatedAt());
         userEntity.setAddress(addressEntity);
+        if (Optional.ofNullable(user.getLevel()).isPresent()) {
+            userEntity.setLevel(this.userLevelMapper.fromDomainToEntity(user.getLevel()));
+        }
 
         userEntity = this.repository.save(userEntity);
         return this.mapper.fromEntityToDomain(userEntity);

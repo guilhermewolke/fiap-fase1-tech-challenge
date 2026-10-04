@@ -1,7 +1,8 @@
 package com.github.techChallenge.infrastructure.entities.user;
 
 import com.github.techChallenge.domain.user.User;
-import com.github.techChallenge.domain.user.UserLevel;
+import com.github.techChallenge.infrastructure.entities.userlevel.UserLevelEntity;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -21,9 +22,12 @@ public class UserEntity {
     private String login;
     @Column(name = "senha", nullable = false)
     private String password;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "level", nullable = false)
-    private UserLevel level;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="usuarios_nivel_id")
+    @Nullable
+    private UserLevelEntity level;
+
     @Embedded
     private AddressEntity address;
     private LocalDateTime createdAt;
@@ -63,11 +67,11 @@ public class UserEntity {
         this.password = password;
     }
 
-    public UserLevel getLevel() {
+    public UserLevelEntity getLevel() {
         return level;
     }
 
-    public void setLevel(UserLevel level) {
+    public void setLevel(UserLevelEntity level) {
         this.level = level;
     }
 
@@ -103,7 +107,6 @@ public class UserEntity {
         if (Optional.ofNullable(user.getLogin()).isPresent()) this.setLogin(user.getLogin());
         if (Optional.ofNullable(user.getEmail()).isPresent()) this.setEmail(user.getEmail());
         if (Optional.ofNullable(user.getPassword()).isPresent()) this.setPassword(user.getPassword());
-        if (Optional.ofNullable(user.getLevel()).isPresent()) this.setLevel(user.getLevel());
         if (Optional.ofNullable(user.getAddress()).isPresent()) this.setAddress(new AddressEntity(user.getAddress()));
         if (Optional.ofNullable(user.getCreatedAt()).isPresent()) this.setCreatedAt(user.getCreatedAt());
         if (Optional.ofNullable(user.getUpdatedAt()).isPresent()) this.setUpdatedAt(user.getUpdatedAt());

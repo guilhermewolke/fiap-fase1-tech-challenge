@@ -2,7 +2,8 @@ package com.github.techChallenge.domain.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.github.techChallenge.domain.user.Address;
-import com.github.techChallenge.domain.user.UserLevel;
+import com.github.techChallenge.domain.userlevel.UserLevel;
+import com.github.techChallenge.domain.userlevel.dto.UserLevelOutputDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -21,8 +22,8 @@ public record UserOutputDTO(
         @Schema(description = "Nome de usuário", example = "jose.silva")
         String login,
 
-        @Schema(description = "Nível de acesso do usuário", example = "OWNER")
-        UserLevel level,
+        @Schema(description = "Nível de acesso do usuário", implementation = UserLevelOutputDTO.class)
+        UserLevelOutputDTO level,
 
         @Schema(description = "Endereço do usuário")
         Address address,

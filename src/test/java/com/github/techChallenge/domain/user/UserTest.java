@@ -1,5 +1,6 @@
 package com.github.techChallenge.domain.user;
 
+import com.github.techChallenge.domain.userlevel.UserLevel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class UserTest {
                 "UF","Brasil");
 
         this.user = User.create("User 1","user@user.com.br","user",
-                "password", UserLevel.CUSTOMER, address);
+                "password", address);
     }
 
     @Test
@@ -28,7 +29,6 @@ class UserTest {
         assertEquals("user@user.com.br", user.getEmail());
         assertEquals("user", user.getLogin());
         assertEquals("password", user.getPassword());
-        assertEquals(UserLevel.CUSTOMER, user.getLevel());
         assertEquals("Rua 1", user.getAddress().address());
         assertEquals("123", user.getAddress().number());
         assertEquals("N/A", user.getAddress().complement());
@@ -56,15 +56,13 @@ class UserTest {
                 "11235-900","Bairro alterado","Cidade alterado",
                 "UF alterado","Argentinha");
 
-        user.update("User 2", "user_alterado@user.com.br", "user_alterado",
-                UserLevel.OWNER, address);
+        user.update("User 2", "user_alterado@user.com.br", "user_alterado", address);
 
         assertNull(user.getId());
         assertEquals("User 2", user.getName());
         assertEquals("user_alterado@user.com.br", user.getEmail());
         assertEquals("user_alterado", user.getLogin());
         assertEquals("password", user.getPassword());
-        assertEquals(UserLevel.OWNER, user.getLevel());
         assertEquals("Rua 2", user.getAddress().address());
         assertEquals("1234", user.getAddress().number());
         assertEquals("N/A alterado", user.getAddress().complement());
@@ -94,7 +92,6 @@ class UserTest {
         assertEquals("user@user.com.br", user.getEmail());
         assertEquals("user", user.getLogin());
         assertEquals("nova senha", user.getPassword());
-        assertEquals(UserLevel.CUSTOMER, user.getLevel());
         assertEquals("Rua 1", user.getAddress().address());
         assertEquals("123", user.getAddress().number());
         assertEquals("N/A", user.getAddress().complement());

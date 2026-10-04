@@ -1,12 +1,17 @@
 package com.github.techChallenge.infrastructure.config;
 
-import com.github.techChallenge.application.gateways.IUserGateway;
-import com.github.techChallenge.application.gateways.UserGateway;
+import com.github.techChallenge.application.gateways.user.IUserGateway;
+import com.github.techChallenge.application.gateways.user.UserGateway;
+import com.github.techChallenge.application.repositories.IUserLevelRepository;
+import com.github.techChallenge.application.repositories.IUserRepository;
 import com.github.techChallenge.application.usecases.user.*;
+import com.github.techChallenge.application.validators.UserLevelValidator;
 import com.github.techChallenge.application.validators.UserValidator;
 import com.github.techChallenge.domain.user.IUserMapper;
+import com.github.techChallenge.domain.userlevel.IUserLevelMapper;
 import com.github.techChallenge.infrastructure.mappers.UserMapper;
-import com.github.techChallenge.infrastructure.repositories.UserRepositoryGateway;
+import com.github.techChallenge.infrastructure.repositories.user.UserRepository;
+import com.github.techChallenge.infrastructure.repositories.user.UserRepositoryGateway;
 import com.github.techChallenge.infrastructure.security.ISecurityConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +20,8 @@ import org.springframework.context.annotation.Configuration;
 public class UserConfig {
 
     @Bean
-    CreateUserUseCase createUserUseCase(IUserGateway gateway, IUserMapper mapper, ISecurityConfig securityConfig) {
-        return new CreateUserUseCase(gateway, mapper, securityConfig);
+    CreateUserUseCase createUserUseCase(IUserGateway gateway, IUserMapper mapper, ISecurityConfig securityConfig, UserValidator validator) {
+        return new CreateUserUseCase(gateway, mapper, securityConfig, validator);
     }
 
     @Bean
@@ -45,17 +50,25 @@ public class UserConfig {
     }
 
     @Bean
-    UserGateway userGateway(UserRepositoryGateway userRepositoryGateway, UserMapper userMapper, ISecurityConfig securityConfig) {
-        return new UserGateway(userRepositoryGateway, userMapper, securityConfig);
+    UserGateway userGateway(UserRepositoryGateway userRepositoryGateway, UserMapper userMapper, ISecurityConfig securityConfig,
+                            IUserLevelRepository userLevelRepository) {
+        return new UserGateway(userRepositoryGateway, userMapper, securityConfig, userLevelRepository);
     }
 
     @Bean
-    UserRepositoryGateway userRepositoryGateway() {
-        return new UserRepositoryGateway();
+    UserRepositoryGateway userRepositoryGateway(UserRepository repository, IUserMapper mapper, IUserLevelMapper userLevelMapper) {
+        return new UserRepositoryGateway(repository, mapper, userLevelMapper);
     }
 
     @Bean
-    ChangePasswordUseCase changePasswordUser(IUserGateway gateway, IUserMapper mapper, ISecurityConfig securityConfig){return new ChangePasswordUseCase(
-                gateway, mapper, securityConfig);};
+    ChangePasswordUseCase changePasswordUser(IUserGateway gateway, IUserMapper mapper, ISecurityConfig securityConfig){
+        return new ChangePasswordUseCase(gateway, mapper, securityConfig);
+    }
+
+    @Bean
+    GrantUserLevelUseCase grantUserLevelUseCase(IUserGateway gateway, IUserMapper mapper, UserValidator userValidator,
+                          UserLevelValidator userLevelValidator) {
+        return new GrantUserLevelUseCase(gateway, mapper, userValidator, userLevelValidator);
+    }
 
 }
