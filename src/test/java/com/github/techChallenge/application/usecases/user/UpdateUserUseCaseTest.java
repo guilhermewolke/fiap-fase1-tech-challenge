@@ -151,7 +151,7 @@ class UpdateUserUseCaseTest {
     }
 
     @Test
-    @DisplayName("Deve lançar exceção caso exista outro usuário com o email informando")
+    @DisplayName("Deve lançar exceção caso exista outro usuário com o email informado")
     void shouldThrowAnExceptionWhenThereIsAlreadyAnotherUserWithThisEmail() {
         User mockUpdatedUser = new User(
                 user.getId(),

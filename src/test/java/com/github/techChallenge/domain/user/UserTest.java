@@ -43,7 +43,7 @@ class UserTest {
     }
 
     @Test
-    @DisplayName("Deve criar um novo usuário")
+    @DisplayName("Deve Lançar uma exceção devido a dados inválidos durante a criação")
     void shouldThrowAnExceptionDueToInvalidDataDuringCreation() {
         fail("implementar método de validação na entidade, e chamar ele na hora de criar um novo usuário");
     }
@@ -77,7 +77,7 @@ class UserTest {
     }
 
     @Test
-    @DisplayName("Deve criar um novo usuário")
+    @DisplayName("Deve lançar uma excepção devido a erros de validação durante update")
     void shouldThrowAnExceptionDueToInvalidDataDuringUpdate() {
         fail("implementar método de validação na entidade, e chamar ele na hora de atualizar os dados do usuário");
     }

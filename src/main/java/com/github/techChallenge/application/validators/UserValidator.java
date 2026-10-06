@@ -25,7 +25,7 @@ public class UserValidator extends UserUseCase {
         String rawPassword = dto.password();
 
         if(encryptPasswordDataBase.isEmpty() || rawPassword.isEmpty())
-        {throw new InvalidPasswordException("Senha inválida e/ou vazia");};
+        {throw new InvalidPasswordException("Senha inválida e/ou vazia");}
 
         if(security.passwordValidate(rawPassword, encryptPasswordDataBase)
                 && gateway.loginExists(dto.login())){

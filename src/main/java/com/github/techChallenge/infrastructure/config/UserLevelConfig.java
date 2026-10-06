@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class UserLevelConfig {
 
     @Bean
-    CreateUserLevelUseCase createUserLevelUseCase(IUserLevelGateway gateway, IUserLevelMapper mapper) {
-        return new CreateUserLevelUseCase(gateway, mapper);
+    CreateUserLevelUseCase createUserLevelUseCase(IUserLevelGateway gateway, IUserLevelMapper mapper, UserLevelValidator validator) {
+        return new CreateUserLevelUseCase(gateway, mapper, validator);
     }
 
     @Bean
