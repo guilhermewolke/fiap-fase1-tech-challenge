@@ -2,6 +2,7 @@ package com.github.techChallenge.infrastructure.config;
 
 import com.github.techChallenge.application.gateways.restaurantCategory.IRestaurantCategoryGateway;
 import com.github.techChallenge.application.gateways.restaurantCategory.RestaurantCategoryGateway;
+import com.github.techChallenge.application.repositories.IRestaurantCategoryRepository;
 import com.github.techChallenge.application.usecases.restaurantCategory.*;
 import com.github.techChallenge.application.validators.RestaurantCategoryValidator;
 import com.github.techChallenge.domain.restaurantCategory.IRestaurantCategoryMapper;
@@ -44,7 +45,7 @@ public class RestaurantCategoryConfig {
     }
 
     @Bean
-    RestaurantCategoryGateway restaurantCategoryGateway(RestaurantCategoryRepositoryGateway restaurantCategoryRepositoryGateway, RestaurantCategoryMapper restaurantCategoryMapper) {
+    RestaurantCategoryGateway restaurantCategoryGateway(IRestaurantCategoryRepository restaurantCategoryRepositoryGateway, RestaurantCategoryMapper restaurantCategoryMapper) {
         return new RestaurantCategoryGateway(restaurantCategoryRepositoryGateway, restaurantCategoryMapper);
     }
 
