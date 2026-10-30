@@ -1,6 +1,7 @@
 package com.github.techChallenge.infrastructure.controllers.user;
 
 import com.github.techChallenge.application.usecases.user.*;
+import com.github.techChallenge.application.exceptions.InvalidCredentialsException;
 import com.github.techChallenge.application.validators.UserValidator;
 import com.github.techChallenge.domain.user.dto.*;
 import com.github.techChallenge.infrastructure.security.UserAccountAccess;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
@@ -121,8 +123,10 @@ public class UserController implements IUserController {
             @Valid @RequestBody UserChangePasswordInputDTO dto) {
         var authenticatedUser = UserAccountAccess.requireSelf(id);
         UserAccountAccess.requireOwnLogin(authenticatedUser, dto.login());
-        boolean sucess = this.changePasswordUser.changePassword(dto);
-        if(!sucess){ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT);};
+        boolean success = this.changePasswordUser.changePassword(dto);
+        if (!success) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, "Não foi possível alterar a senha.");
+        }
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Senha alterada");
@@ -134,8 +138,10 @@ public class UserController implements IUserController {
     @PostMapping("/auth-login")
     public ResponseEntity<Map<String, Object>> authUser(
             @Valid @RequestBody UserAuthInputDTO dto) {
-       boolean sucess = this.userValidator.authUser(dto);
-        if(!sucess){ResponseEntity.status(HttpStatus.UNAUTHORIZED);};
+        boolean success = this.userValidator.authUser(dto);
+        if (!success) {
+            throw new InvalidCredentialsException();
+        }
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
         response.put("message", "Usuário autenticado");

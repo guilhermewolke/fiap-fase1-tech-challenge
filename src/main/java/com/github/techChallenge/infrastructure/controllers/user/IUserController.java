@@ -319,7 +319,7 @@ public interface IUserController {
             )
         ),
         @ApiResponse(
-                responseCode = "402",
+                responseCode = "422",
                 description = "Conteudo da requisição não processável",
                 content = @Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
