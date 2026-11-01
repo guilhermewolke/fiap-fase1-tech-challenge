@@ -39,7 +39,7 @@ public class RestaurantSecurityConfiguration {
     SecurityFilterChain restaurantSecurityFilterChain(HttpSecurity http, ObjectMapper json,
                                                      ProblemDetailFactory problems) throws Exception {
         return http
-                .securityMatcher("/api/v1/restaurant", "/api/v1/restaurant/**", "/api/v1/menu-item", "/api/v1/menu-item/**", "/api/v1/user/**")
+                .securityMatcher("/api/v1/restaurant", "/api/v1/restaurant/**", "/api/v1/user/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .requestCache(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

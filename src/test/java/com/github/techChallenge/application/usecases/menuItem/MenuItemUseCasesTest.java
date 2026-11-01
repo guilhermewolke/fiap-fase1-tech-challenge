@@ -57,14 +57,14 @@ class MenuItemUseCasesTest {
     void shouldCreateMenuItem() {
         // Arrange
         MenuItemCreateInputDTO dto = new MenuItemCreateInputDTO(" X-Burger ", "Pão e carne",
-                price, false, "/fotos/x-burger.png", 7L);
+                price, false, "/fotos/x-burger.png");
 
         when(gateway.nameExists("X-Burger", 7L)).thenReturn(false);
         when(gateway.create(any(MenuItem.class))).thenReturn(saved);
         when(mapper.fromDomainToOutputDTO(saved)).thenReturn(output);
 
         // Act
-        MenuItemOutputDTO result = new CreateMenuItemUseCase(gateway, mapper, access).execute(dto, 1L);
+        MenuItemOutputDTO result = new CreateMenuItemUseCase(gateway, mapper, access).execute(dto, 7L, 1L);
 
         // Assert
         ArgumentCaptor<MenuItem> captor = ArgumentCaptor.forClass(MenuItem.class);
@@ -80,13 +80,13 @@ class MenuItemUseCasesTest {
     void shouldNotCreateDuplicatedName() {
         // Arrange
         MenuItemCreateInputDTO dto = new MenuItemCreateInputDTO("X-Burger", "Pão e carne",
-                price, false, "/fotos/x-burger.png", 7L);
+                price, false, "/fotos/x-burger.png");
 
         when(gateway.nameExists("X-Burger", 7L)).thenReturn(true);
 
         // Act + Assert
         assertThrows(DuplicateMenuItemNameException.class,
-                () -> new CreateMenuItemUseCase(gateway, mapper, access).execute(dto, 1L));
+                () -> new CreateMenuItemUseCase(gateway, mapper, access).execute(dto, 7L, 1L));
         verify(gateway, never()).create(any());
     }
 
@@ -104,7 +104,7 @@ class MenuItemUseCasesTest {
         when(mapper.fromDomainToOutputDTO(saved)).thenReturn(output);
 
         // Act
-        MenuItemOutputDTO result = new UpdateMenuItemUseCase(gateway, mapper, access).execute(dto, 1L, 1L);
+        MenuItemOutputDTO result = new UpdateMenuItemUseCase(gateway, mapper, access).execute(dto, 7L, 1L, 1L);
 
         // Assert
         assertEquals("X-Salada", saved.getName());
@@ -125,7 +125,7 @@ class MenuItemUseCasesTest {
 
         // Act + Assert
         assertThrows(MenuItemNotFoundException.class,
-                () -> new UpdateMenuItemUseCase(gateway, mapper, access).execute(dto, 99L, 1L));
+                () -> new UpdateMenuItemUseCase(gateway, mapper, access).execute(dto, 7L, 99L, 1L));
         verify(gateway, never()).update(any(), anyLong());
     }
 
@@ -142,7 +142,7 @@ class MenuItemUseCasesTest {
 
         // Act + Assert
         assertThrows(DuplicateMenuItemNameException.class,
-                () -> new UpdateMenuItemUseCase(gateway, mapper, access).execute(dto, 1L, 1L));
+                () -> new UpdateMenuItemUseCase(gateway, mapper, access).execute(dto, 7L, 1L, 1L));
         verify(gateway, never()).update(any(), anyLong());
     }
 
@@ -155,7 +155,7 @@ class MenuItemUseCasesTest {
         when(mapper.fromDomainToOutputDTO(saved)).thenReturn(output);
 
         // Act
-        MenuItemOutputDTO result = new FindMenuItemUseCase(gateway, mapper).execute(1L);
+        MenuItemOutputDTO result = new FindMenuItemUseCase(gateway, mapper).execute(7L, 1L);
 
         // Assert
         assertEquals(output, result);
@@ -169,7 +169,7 @@ class MenuItemUseCasesTest {
 
         // Act + Assert
         assertThrows(MenuItemNotFoundException.class,
-                () -> new FindMenuItemUseCase(gateway, mapper).execute(99L));
+                () -> new FindMenuItemUseCase(gateway, mapper).execute(7L, 99L));
         verify(gateway, never()).find(anyLong());
     }
 
@@ -198,7 +198,7 @@ class MenuItemUseCasesTest {
         when(gateway.find(1L)).thenReturn(saved);
 
         // Act
-        new DeleteMenuItemUseCase(gateway, mapper, access).execute(1L, 1L);
+        new DeleteMenuItemUseCase(gateway, mapper, access).execute(7L, 1L, 1L);
 
         // Assert
         verify(gateway).delete(1L);
@@ -212,7 +212,7 @@ class MenuItemUseCasesTest {
 
         // Act + Assert
         assertThrows(MenuItemNotFoundException.class,
-                () -> new DeleteMenuItemUseCase(gateway, mapper, access).execute(99L, 1L));
+                () -> new DeleteMenuItemUseCase(gateway, mapper, access).execute(7L, 99L, 1L));
         verify(gateway, never()).delete(anyLong());
     }
 }

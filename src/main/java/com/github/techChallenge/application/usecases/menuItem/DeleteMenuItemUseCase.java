@@ -1,6 +1,5 @@
 package com.github.techChallenge.application.usecases.menuItem;
 
-import com.github.techChallenge.application.exceptions.MenuItemNotFoundException;
 import com.github.techChallenge.application.gateways.menuItem.IMenuItemGateway;
 import com.github.techChallenge.domain.menuItem.IMenuItemMapper;
 import com.github.techChallenge.application.validators.RestaurantAccessPolicy;
@@ -15,10 +14,9 @@ public class DeleteMenuItemUseCase extends MenuItemUseCase {
     }
 
     @Transactional
-    public void execute(Long id, Long authenticatedUserId) {
-        if (!this.gateway.existById(id)) throw new MenuItemNotFoundException(id);
-
-        access.requireOwner(gateway.find(id).getRestaurantId(), authenticatedUserId);
+    public void execute(Long restaurantId, Long id, Long authenticatedUserId) {
+        findInRestaurant(restaurantId, id);
+        access.requireOwner(restaurantId, authenticatedUserId);
         this.gateway.delete(id);
     }
 }
