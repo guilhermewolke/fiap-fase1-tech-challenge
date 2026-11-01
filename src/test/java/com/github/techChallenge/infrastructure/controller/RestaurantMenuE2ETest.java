@@ -76,9 +76,9 @@ class RestaurantMenuE2ETest {
                         "neighborhood", "Centro", "city", "São Paulo", "state", "SP", "country", "Brasil")));
     }
 
-    private Map<String, Object> itemBody(Long restaurantId) {
+    private Map<String, Object> itemBody() {
         return new LinkedHashMap<>(Map.of("name", "Prato", "description", "Prato da casa", "price", new BigDecimal("29.90"),
-                "dineInOnly", false, "photoPath", "/fotos/prato.png", "restaurantId", restaurantId));
+                "dineInOnly", false, "photoPath", "/fotos/prato.png"));
     }
 
     private HttpResponse<String> request(String method, String path, Object body, String login) throws Exception {
@@ -111,10 +111,14 @@ class RestaurantMenuE2ETest {
         return body(response).path("id").asLong();
     }
 
+    private String menuPath(Long restaurantId) { return "/api/v1/restaurant/" + restaurantId + "/menu"; }
+
     private Long createItem(Long restaurantId) throws Exception {
-        var response = request("POST", "/api/v1/menu-item", itemBody(restaurantId), "owner.one");
+        var response = request("POST", menuPath(restaurantId), itemBody(), "owner.one");
         assertEquals(201, response.statusCode(), response.body());
-        return body(response).path("id").asLong();
+        Long id = body(response).path("id").asLong();
+        assertTrue(response.headers().firstValue("Location").orElse("").endsWith(menuPath(restaurantId) + "/" + id));
+        return id;
     }
 
     @Test void shouldExecuteBothCompleteCRUDsOverHttpAndRealDatabases() throws Exception {
@@ -125,31 +129,30 @@ class RestaurantMenuE2ETest {
         var restaurantUpdate = restaurantBody("Restaurante atualizado", cuisine.getId());
         assertEquals(200, request("PUT", "/api/v1/restaurant/" + restaurantId, restaurantUpdate, "owner.one").statusCode());
         Long itemId = createItem(restaurantId);
-        var menu = request("GET", "/api/v1/menu-item?restaurantId=" + restaurantId, null, null);
+        var menu = request("GET", menuPath(restaurantId), null, null);
         assertEquals(200, menu.statusCode());
         assertEquals(itemId, body(menu).path("content").get(0).path("id").asLong());
-        var itemUpdate = itemBody(restaurantId);
-        itemUpdate.remove("restaurantId");
+        var itemUpdate = itemBody();
         itemUpdate.put("name", "Prato atualizado");
         itemUpdate.put("price", new BigDecimal("32.50"));
         itemUpdate.put("dineInOnly", true);
-        var updated = request("PUT", "/api/v1/menu-item/" + itemId, itemUpdate, "owner.one");
+        var updated = request("PUT", menuPath(restaurantId) + "/" + itemId, itemUpdate, "owner.one");
         assertEquals(200, updated.statusCode(), updated.body());
         assertEquals(restaurantId, body(updated).path("restaurantId").asLong());
         assertTrue(body(updated).path("dineInOnly").asBoolean());
-        var found = request("GET", "/api/v1/menu-item/" + itemId, null, null);
+        var found = request("GET", menuPath(restaurantId) + "/" + itemId, null, null);
         assertEquals("Prato atualizado", body(found).path("name").asText());
         assertEquals(0, new BigDecimal("32.50").compareTo(body(found).path("price").decimalValue()));
         problem(request("DELETE", "/api/v1/restaurant/" + restaurantId, null, "owner.one"), 409);
-        assertEquals(204, request("DELETE", "/api/v1/menu-item/" + itemId, null, "owner.one").statusCode());
+        assertEquals(204, request("DELETE", menuPath(restaurantId) + "/" + itemId, null, "owner.one").statusCode());
         assertEquals(204, request("DELETE", "/api/v1/restaurant/" + restaurantId, null, "owner.one").statusCode());
         problem(request("GET", "/api/v1/restaurant/" + restaurantId, null, null), 404);
-        problem(request("GET", "/api/v1/menu-item/" + itemId, null, null), 404);
+        problem(request("GET", menuPath(restaurantId) + "/" + itemId, null, null), 404);
     }
 
     @Test void shouldRequireAuthenticationForWrites() throws Exception {
         problem(request("POST", "/api/v1/restaurant", restaurantBody("R", cuisine.getId()), null), 401);
-        problem(request("POST", "/api/v1/menu-item", itemBody(1L), null), 401);
+        problem(request("POST", menuPath(1L), itemBody(), null), 401);
         assertEquals(0, restaurants.count());
         assertEquals(0, items.count());
     }
@@ -162,7 +165,7 @@ class RestaurantMenuE2ETest {
     @Test void shouldDenyCustomersEvenWhenTheyKnowTheRestaurantId() throws Exception {
         Long id = createRestaurant("Restaurante", "owner.one");
         problem(request("POST", "/api/v1/restaurant", restaurantBody("Outro", cuisine.getId()), "customer"), 403);
-        problem(request("POST", "/api/v1/menu-item", itemBody(id), "customer"), 403);
+        problem(request("POST", menuPath(id), itemBody(), "customer"), 403);
         assertEquals(1, restaurants.count());
         assertEquals(0, items.count());
     }
@@ -170,9 +173,9 @@ class RestaurantMenuE2ETest {
     @Test void shouldDenyAnotherOwnerForEveryMutationOfTheRestaurantAndMenu() throws Exception {
         Long restaurantId = createRestaurant("Restaurante", "owner.one");
         Long itemId = createItem(restaurantId);
-        problem(request("POST", "/api/v1/menu-item", itemBody(restaurantId), "owner.two"), 403);
-        problem(request("PUT", "/api/v1/menu-item/" + itemId, itemBody(restaurantId), "owner.two"), 403);
-        problem(request("DELETE", "/api/v1/menu-item/" + itemId, null, "owner.two"), 403);
+        problem(request("POST", menuPath(restaurantId), itemBody(), "owner.two"), 403);
+        problem(request("PUT", menuPath(restaurantId) + "/" + itemId, itemBody(), "owner.two"), 403);
+        problem(request("DELETE", menuPath(restaurantId) + "/" + itemId, null, "owner.two"), 403);
         problem(request("PUT", "/api/v1/restaurant/" + restaurantId, restaurantBody("Invasão", cuisine.getId()), "owner.two"), 403);
         problem(request("DELETE", "/api/v1/restaurant/" + restaurantId, null, "owner.two"), 403);
         assertEquals("Restaurante", restaurants.findById(restaurantId).orElseThrow().getName());
@@ -210,16 +213,16 @@ class RestaurantMenuE2ETest {
     }
 
     @Test void shouldRejectUnknownRestaurantWhenCreatingOrListingItems() throws Exception {
-        problem(request("POST", "/api/v1/menu-item", itemBody(Long.MAX_VALUE), "owner.one"), 404);
-        problem(request("GET", "/api/v1/menu-item?restaurantId=" + Long.MAX_VALUE, null, null), 404);
+        problem(request("POST", menuPath(Long.MAX_VALUE), itemBody(), "owner.one"), 404);
+        problem(request("GET", menuPath(Long.MAX_VALUE), null, null), 404);
     }
 
     @ParameterizedTest @ValueSource(strings = {"0", "-1", "1.001"})
     void shouldRejectInvalidPricesWithoutSaving(String price) throws Exception {
         Long restaurantId = createRestaurant("Restaurante", "owner.one");
-        var payload = itemBody(restaurantId);
+        var payload = itemBody();
         payload.put("price", new BigDecimal(price));
-        var response = request("POST", "/api/v1/menu-item", payload, "owner.one");
+        var response = request("POST", menuPath(restaurantId), payload, "owner.one");
         problem(response, 400);
         assertTrue(body(response).path("violations").has("price"));
         assertEquals(0, items.count());
@@ -227,9 +230,9 @@ class RestaurantMenuE2ETest {
 
     @Test void shouldReportMissingAvailabilityWithoutThrowingNullPointerException() throws Exception {
         Long restaurantId = createRestaurant("Restaurante", "owner.one");
-        var payload = itemBody(restaurantId);
+        var payload = itemBody();
         payload.remove("dineInOnly");
-        var response = request("POST", "/api/v1/menu-item", payload, "owner.one");
+        var response = request("POST", menuPath(restaurantId), payload, "owner.one");
         problem(response, 400);
         assertTrue(body(response).path("violations").has("dineInOnly"));
     }
@@ -238,10 +241,10 @@ class RestaurantMenuE2ETest {
         Long first = createRestaurant("Primeiro", "owner.one");
         Long second = createRestaurant("Segundo", "owner.one");
         createItem(first);
-        var duplicate = itemBody(first);
+        var duplicate = itemBody();
         duplicate.put("name", " PRATO ");
-        problem(request("POST", "/api/v1/menu-item", duplicate, "owner.one"), 409);
-        assertEquals(201, request("POST", "/api/v1/menu-item", itemBody(second), "owner.one").statusCode());
+        problem(request("POST", menuPath(first), duplicate, "owner.one"), 409);
+        assertEquals(201, request("POST", menuPath(second), itemBody(), "owner.one").statusCode());
     }
 
     @Test void shouldFilterRestaurantsByCuisine() throws Exception {
@@ -259,13 +262,13 @@ class RestaurantMenuE2ETest {
     @Test void shouldRejectInvalidPaginationWith400() throws Exception {
         problem(request("GET", "/api/v1/restaurant?page=-1", null, null), 400);
         problem(request("GET", "/api/v1/restaurant?offset=101", null, null), 400);
-        problem(request("GET", "/api/v1/menu-item?restaurantId=1&offset=0", null, null), 400);
+        problem(request("GET", menuPath(1L) + "?offset=0", null, null), 400);
     }
 
     @Test void shouldReturn404ForMissingResourcesOnReadsAndWrites() throws Exception {
-        problem(request("GET", "/api/v1/menu-item/" + Long.MAX_VALUE, null, null), 404);
-        problem(request("PUT", "/api/v1/menu-item/" + Long.MAX_VALUE, itemBody(1L), "owner.one"), 404);
-        problem(request("DELETE", "/api/v1/menu-item/" + Long.MAX_VALUE, null, "owner.one"), 404);
+        problem(request("GET", menuPath(1L) + "/" + Long.MAX_VALUE, null, null), 404);
+        problem(request("PUT", menuPath(1L) + "/" + Long.MAX_VALUE, itemBody(), "owner.one"), 404);
+        problem(request("DELETE", menuPath(1L) + "/" + Long.MAX_VALUE, null, "owner.one"), 404);
         problem(request("DELETE", "/api/v1/restaurant/" + Long.MAX_VALUE, null, "owner.one"), 404);
     }
 
@@ -307,6 +310,33 @@ class RestaurantMenuE2ETest {
         var specification = body(response);
         assertEquals("basic", specification.path("components").path("securitySchemes").path("basicAuth").path("scheme").asText());
         assertTrue(specification.path("paths").path("/api/v1/restaurant").has("post"));
-        assertTrue(specification.path("paths").path("/api/v1/menu-item/{id}").has("delete"));
+        assertTrue(specification.path("paths").path("/api/v1/restaurant/{restaurantId}/menu/{id}").has("delete"));
+        assertEquals("Restaurantes", specification.path("paths").path("/api/v1/restaurant/{restaurantId}/menu").path("get").path("tags").get(0).asText());
+        assertFalse(specification.path("paths").has("/api/v1/menu-item"));
+    }
+
+    @ParameterizedTest @ValueSource(strings = {"GET", "PUT", "DELETE"})
+    void shouldRejectAnItemUnderAnotherRestaurantEvenWhenBothHaveTheSameOwner(String method) throws Exception {
+        Long first = createRestaurant("Primeiro", "owner.one");
+        Long second = createRestaurant("Segundo", "owner.one");
+        Long itemId = createItem(first);
+        var payload = method.equals("PUT") ? itemBody() : null;
+        problem(request(method, menuPath(second) + "/" + itemId, payload, "owner.one"), 404);
+        assertEquals("Prato", items.findById(itemId).orElseThrow().getName());
+        assertEquals(first, items.findById(itemId).orElseThrow().getRestaurantId());
+        assertEquals(200, request("GET", menuPath(first) + "/" + itemId, null, null).statusCode());
+    }
+
+    @Test void shouldKeepEachRestaurantsMenuIsolated() throws Exception {
+        Long first = createRestaurant("Primeiro", "owner.one");
+        Long second = createRestaurant("Segundo", "owner.one");
+        Long firstItem = createItem(first);
+        Long secondItem = createItem(second);
+        var firstMenu = body(request("GET", menuPath(first), null, null));
+        var secondMenu = body(request("GET", menuPath(second), null, null));
+        assertEquals(1, firstMenu.path("totalElements").asInt());
+        assertEquals(firstItem, firstMenu.path("content").get(0).path("id").asLong());
+        assertEquals(1, secondMenu.path("totalElements").asInt());
+        assertEquals(secondItem, secondMenu.path("content").get(0).path("id").asLong());
     }
 }

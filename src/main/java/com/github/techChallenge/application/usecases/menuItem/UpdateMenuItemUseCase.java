@@ -1,7 +1,6 @@
 package com.github.techChallenge.application.usecases.menuItem;
 
 import com.github.techChallenge.application.exceptions.DuplicateMenuItemNameException;
-import com.github.techChallenge.application.exceptions.MenuItemNotFoundException;
 import com.github.techChallenge.application.gateways.menuItem.IMenuItemGateway;
 import com.github.techChallenge.domain.menuItem.IMenuItemMapper;
 import com.github.techChallenge.domain.menuItem.MenuItem;
@@ -19,11 +18,9 @@ public class UpdateMenuItemUseCase extends MenuItemUseCase {
     }
 
     @Transactional
-    public MenuItemOutputDTO execute(MenuItemUpdateInputDTO dto, Long id, Long authenticatedUserId) {
-        if (!this.gateway.existById(id)) throw new MenuItemNotFoundException(id);
-
-        MenuItem menuItem = this.gateway.find(id);
-        access.requireOwner(menuItem.getRestaurantId(), authenticatedUserId);
+    public MenuItemOutputDTO execute(MenuItemUpdateInputDTO dto, Long restaurantId, Long id, Long authenticatedUserId) {
+        MenuItem menuItem = findInRestaurant(restaurantId, id);
+        access.requireOwner(restaurantId, authenticatedUserId);
         menuItem.update(
                 dto.name(),
                 dto.description(),

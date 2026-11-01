@@ -19,9 +19,6 @@ public record MenuItemCreateInputDTO(
         Boolean dineInOnly,
 
         @Schema(description = "Caminho da foto do prato", example = "/fotos/x-burger.png", maxLength = 255, requiredMode = Schema.RequiredMode.REQUIRED)
-        String photoPath,
-
-        @Schema(description = "ID do restaurante dono do item", example = "1", requiredMode = Schema.RequiredMode.REQUIRED)
-        Long restaurantId) {
+        String photoPath) {
 }
 

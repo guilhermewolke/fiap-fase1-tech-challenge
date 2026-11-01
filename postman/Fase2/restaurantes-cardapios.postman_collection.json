@@ -400,14 +400,16 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/menu-item",
+              "raw": "{{baseUrl}}/api/v1/restaurant/{{restaurantId}}/menu",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "menu-item"
+                "restaurant",
+                "{{restaurantId}}",
+                "menu"
               ]
             },
             "auth": {
@@ -427,7 +429,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Prato da casa\",\n  \"description\": \"Descrição do prato\",\n  \"price\": 29.9,\n  \"dineInOnly\": false,\n  \"photoPath\": \"/fotos/prato.png\",\n  \"restaurantId\": {{restaurantId}}\n}",
+              "raw": "{\n  \"name\": \"Prato da casa\",\n  \"description\": \"Descrição do prato\",\n  \"price\": 29.9,\n  \"dineInOnly\": false,\n  \"photoPath\": \"/fotos/prato.png\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -459,20 +461,18 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/menu-item?restaurantId={{restaurantId}}&page=0&offset=10",
+              "raw": "{{baseUrl}}/api/v1/restaurant/{{restaurantId}}/menu?page=0&offset=10",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "menu-item"
+                "restaurant",
+                "{{restaurantId}}",
+                "menu"
               ],
               "query": [
-                {
-                  "key": "restaurantId",
-                  "value": "{{restaurantId}}"
-                },
                 {
                   "key": "page",
                   "value": "0"
@@ -514,14 +514,16 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/menu-item/{{itemId}}",
+              "raw": "{{baseUrl}}/api/v1/restaurant/{{restaurantId}}/menu/{{itemId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "menu-item",
+                "restaurant",
+                "{{restaurantId}}",
+                "menu",
                 "{{itemId}}"
               ]
             },
@@ -573,14 +575,16 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/menu-item/{{itemId}}",
+              "raw": "{{baseUrl}}/api/v1/restaurant/{{restaurantId}}/menu/{{itemId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "menu-item",
+                "restaurant",
+                "{{restaurantId}}",
+                "menu",
                 "{{itemId}}"
               ]
             },
@@ -617,14 +621,16 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/api/v1/menu-item/{{itemId}}",
+              "raw": "{{baseUrl}}/api/v1/restaurant/{{restaurantId}}/menu/{{itemId}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "api",
                 "v1",
-                "menu-item",
+                "restaurant",
+                "{{restaurantId}}",
+                "menu",
                 "{{itemId}}"
               ]
             },

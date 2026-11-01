@@ -18,14 +18,14 @@ public class CreateMenuItemUseCase extends MenuItemUseCase {
     }
 
     @Transactional
-    public MenuItemOutputDTO execute(MenuItemCreateInputDTO dto, Long authenticatedUserId) {
+    public MenuItemOutputDTO execute(MenuItemCreateInputDTO dto, Long restaurantId, Long authenticatedUserId) {
         MenuItem menuItem = MenuItem.create(
                 dto.name(),
                 dto.description(),
                 dto.price(),
                 dto.dineInOnly(),
                 dto.photoPath(),
-                dto.restaurantId()
+                restaurantId
         );
 
         access.requireOwner(menuItem.getRestaurantId(), authenticatedUserId);
