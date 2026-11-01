@@ -16,7 +16,7 @@ Funcionalidades principais (`/api/v1/user`):
 | DELETE | `/api/v1/user/{id}` | Remove um usuário |
 | POST | `/api/v1/user/auth-login` | Valida login e senha |
 
-Os endpoints de restaurantes (`/api/v1/restaurant`) e itens do cardápio (`/api/v1/menu-item`),
+Os endpoints de restaurantes (`/api/v1/restaurant`) e itens do cardápio (`/api/v1/restaurant/{restaurantId}/menu`),
 as regras de proprietário, os exemplos e os testes estão em [Restaurantes e cardápios](docs/RESTAURANTES_CARDAPIOS.md).
 
 As consultas são públicas. As escritas de restaurantes e cardápios usam HTTP Basic e exigem um usuário OWNER.
@@ -100,7 +100,8 @@ docker compose --env-file local.env up -d --wait db mongodb
 
 ## Postman
 
-A pasta `postman/` contém as collections e o environment para testar os endpoints
-(inclusive cenários de erro). A collection `restaurantes-cardapios.postman_collection.json`
-cria usuários de demonstração e testa o CRUD e as permissões de restaurantes e cardápios.
+A pasta `postman/` contém as collections e o environment para testar os endpoints.
+Em `postman/Fase2/`, `restaurantes-cardapios.postman_collection.json` valida o fluxo principal
+e `restaurantes-cardapios-cenario-erro.postman_collection.json` reúne os casos de erro.
+Cada collection cria seus próprios dados de demonstração.
 
